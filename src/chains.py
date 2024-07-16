@@ -15,24 +15,20 @@ load_dotenv()
 
 client = OpenAI(api_key=os.getenv("openai-api-key"))
 
-system_prompt = """You are a data scientist working for an e-commerce company. Following tables are available to you:
-Sales (date, revenue): 
-This table contains revenue earned at each month. 
 
-Costs (datetime, category, amount)
-This table contains costs at each month divided by different categories (such as, utilities, logistics, ...). This table does not include costs due to tax. 
+def load_sql(name: str):
+    with open(f"sql/{name}.sql", "r") as f:
+        return f.read()
 
-Tax (datetime, amount, is_paid)
-This table contains amount of tax at each month. The column is_paid shows whether this amount is paid or not. 
+
+system_prompt = f"""You are a data scientist working for an e-commerce company. 
+
+Following tables are available to you:
+{load_sql("tables")}
 
 You have already created data using following sql queries:
-1. select year(datetime), month(datetime), sum(revenue) from Sales group by year(datetime), month(datetime);
-2. select sum(amount) from Costs group by category;
+{load_sql("queries")}
 """
-
-# A C-Level manager at this e-commerce company has the following questions: {question}
-
-# {options}"""
 
 
 def invoke_feasibility_chain(question: str):
